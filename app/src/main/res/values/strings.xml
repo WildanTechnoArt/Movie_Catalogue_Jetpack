@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">Movie Catalogue</string>
+    <string name="movie">Movie</string>
+    <string name="tv_show">Tv Show</string>
+    <string name="movie_title">Movie Title</string>
+    <string name="poster">poster</string>
+    <string name="movie_rating">Movie Rating</string>
+    <string name="rating">Rating: %1$s/10</string>
+    <string name="movie_popularity">Movie Popularity</string>
+    <string name="movie_date">Release</string>
+    <string name="movie_description">Movie Description</string>
+    <string name="overview">OVERVIEW</string>
+    <string name="movie_genres">Genres</string>
+</resources>
