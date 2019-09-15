@@ -5,10 +5,12 @@
     <string name="movie_title">Movie Title</string>
     <string name="poster">poster</string>
     <string name="movie_rating">Movie Rating</string>
+    <string name="movie_duration">Movie Duration</string>
     <string name="rating">Rating: %1$s/10</string>
     <string name="movie_popularity">Movie Popularity</string>
     <string name="movie_date">Release</string>
     <string name="movie_description">Movie Description</string>
     <string name="overview">OVERVIEW</string>
     <string name="movie_genres">Genres</string>
+    <string name="poster_backdrop">Poster Backdrop</string>
 </resources>

@@ -2,16 +2,22 @@ package com.wildan.moviecatalogue.ui.main.detail
 
 import androidx.lifecycle.ViewModel
 import com.wildan.moviecatalogue.model.Movie
+import com.wildan.moviecatalogue.utils.MovieDummy
+import com.wildan.moviecatalogue.utils.TvShowDummy
 
 class DetailViewModel : ViewModel() {
 
-    private var movieList: Movie? = Movie()
+    private var position: Int? = null
 
     fun getMovieShowList(): Movie? {
-        return movieList
+        return position?.let { MovieDummy.listMovie()[it] }
     }
 
-    fun setMovieList(movieList: Movie?){
-        this.movieList = movieList
+    fun getTvShowList(): Movie? {
+        return position?.let { TvShowDummy.listTvShow()[it] }
+    }
+
+    fun setMoviePosition(position: Int?){
+        this.position = position
     }
 }

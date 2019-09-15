@@ -14,7 +14,7 @@ import com.wildan.moviecatalogue.utils.UtilsConstant.MOVIE_POSITION
 import com.wildan.moviecatalogue.utils.UtilsConstant.MOVIE_TYPE
 import kotlinx.android.synthetic.main.item_movie.view.*
 
-class MovieAdapter : RecyclerView.Adapter<MovieAdapter.MovieViewHolder>() {
+class TvShowAdapter : RecyclerView.Adapter<TvShowAdapter.MovieViewHolder>() {
 
     private var mMoviesList = ArrayList<Movie>()
 
@@ -61,7 +61,7 @@ class MovieAdapter : RecyclerView.Adapter<MovieAdapter.MovieViewHolder>() {
             val intent = Intent(mContext, DetailActivity::class.java)
             intent.putParcelableArrayListExtra(DETAIL_MOVIE, mMoviesList)
             intent.putExtra(MOVIE_POSITION, position)
-            intent.putExtra(MOVIE_TYPE, true)
+            intent.putExtra(MOVIE_TYPE, false)
             mContext.startActivity(intent)
         }
     }

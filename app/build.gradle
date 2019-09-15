@@ -9,7 +9,6 @@ apply plugin: 'kotlin-kapt'
 android {
     compileSdkVersion 29
     buildToolsVersion "29.0.2"
-
     defaultConfig {
         applicationId "com.wildan.moviecatalogue"
         minSdkVersion 21
@@ -17,6 +16,12 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        // The Movie DB API
+        buildConfigField "String", "BASE_URL", "\"https://api.themoviedb.org/3/\""
+        buildConfigField "String", "POSTER_URL", "\"https://image.tmdb.org/t/p/w185/\""
+        buildConfigField "String", "BACKDROP_URL", "\"https://image.tmdb.org/t/p/w500/\""
+        buildConfigField "String", "API_KEY", "\"5a11602d864e08ee0466e6c57293cc17\""
     }
 
     buildTypes {
@@ -68,6 +73,16 @@ dependencies {
     testImplementation "org.mockito:mockito-core:$mockitoVersion"
     testImplementation "androidx.arch.core:core-testing:$archLifecycleVersion"
 
+    // Fast Android Networking with RxJava
+    implementation 'com.amitshekhar.android:rx2-android-networking:1.0.2'
+    implementation 'com.squareup.retrofit2:converter-gson:2.6.1'
+
+    // gson
+    implementation 'com.google.code.gson:gson:2.8.5'
+
+    // Local Storage Room Database
+    implementation 'androidx.room:room-runtime:2.2.0-rc01'
+    kapt 'androidx.room:room-compiler:2.2.0-rc01'
 
     // Dependencies for Android unit tests
     androidTestImplementation "junit:junit:$junitVersion"

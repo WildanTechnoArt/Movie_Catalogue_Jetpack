@@ -9,14 +9,14 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.wildan.moviecatalogue.R
-import com.wildan.moviecatalogue.adapter.MovieAdapter
+import com.wildan.moviecatalogue.adapter.TvShowAdapter
 import kotlin.properties.Delegates
 
 class TvShowFragment : Fragment() {
 
     private lateinit var viewModel: TvShowViewModel
     private lateinit var rvTvShowList: RecyclerView
-    private var adapter by Delegates.notNull<MovieAdapter>()
+    private var adapter by Delegates.notNull<TvShowAdapter>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -35,7 +35,7 @@ class TvShowFragment : Fragment() {
         if (activity != null) {
             viewModel = ViewModelProviders.of(this).get(TvShowViewModel::class.java)
 
-            adapter = MovieAdapter()
+            adapter = TvShowAdapter()
             viewModel.getTvShowList()?.let { adapter.setData(it) }
             rvTvShowList.layoutManager = LinearLayoutManager(context)
             rvTvShowList.setHasFixedSize(true)

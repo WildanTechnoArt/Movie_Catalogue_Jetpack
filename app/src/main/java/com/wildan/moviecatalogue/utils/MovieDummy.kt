@@ -1,4 +1,4 @@
-package com.wildan.moviecatalogue.ui.main.movie
+package com.wildan.moviecatalogue.utils
 
 import com.wildan.moviecatalogue.R
 import com.wildan.moviecatalogue.model.Movie
