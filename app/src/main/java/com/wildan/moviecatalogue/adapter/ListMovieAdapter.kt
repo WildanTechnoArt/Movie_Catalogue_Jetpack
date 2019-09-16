@@ -1,27 +1,32 @@
 package com.wildan.moviecatalogue.adapter
 
-import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+
 import com.wildan.moviecatalogue.GlideApp
 import com.wildan.moviecatalogue.R
-import com.wildan.moviecatalogue.model.Movie
-import com.wildan.moviecatalogue.ui.main.detail.DetailActivity
-import com.wildan.moviecatalogue.utils.UtilsConstant.DETAIL_MOVIE
-import com.wildan.moviecatalogue.utils.UtilsConstant.MOVIE_POSITION
-import com.wildan.moviecatalogue.utils.UtilsConstant.MOVIE_TYPE
+import com.wildan.moviecatalogue.model.movie.MovieResult
+import com.wildan.moviecatalogue.utils.DateFormat
+import com.wildan.moviecatalogue.utils.UtilsConstant.POSTER_URL
+
 import kotlinx.android.synthetic.main.item_movie.view.*
 
-class TvShowAdapter : RecyclerView.Adapter<TvShowAdapter.MovieViewHolder>() {
+class ListMovieAdapter(private val mClickListener: MovieAdapterListener?) :
+    RecyclerView.Adapter<ListMovieAdapter.MovieViewHolder>() {
 
-    private var mMoviesList = ArrayList<Movie>()
+    private var mMoviesList = ArrayList<MovieResult>()
 
-    fun setData(items: ArrayList<Movie>) {
+    fun setData(items: ArrayList<MovieResult>) {
         mMoviesList.clear()
         mMoviesList.addAll(items)
         notifyDataSetChanged()
+    }
+
+    fun refreshAdapter(mMoviesList: List<MovieResult>) {
+        this.mMoviesList.addAll(mMoviesList)
+        notifyItemRangeChanged(0, this.mMoviesList.size)
     }
 
     override fun onCreateViewHolder(view: ViewGroup, p1: Int): MovieViewHolder {
@@ -40,7 +45,7 @@ class TvShowAdapter : RecyclerView.Adapter<TvShowAdapter.MovieViewHolder>() {
         holder.itemView.img_poster?.let {
             mContext?.let { it1 ->
                 GlideApp.with(it1)
-                    .load(mMoviesList[position].poster)
+                    .load(POSTER_URL + mMoviesList[position].posterPath)
                     .placeholder(R.drawable.ic_image_placeholder_32dp)
                     .error(R.drawable.ic_error_image_32dp)
                     .into(it)
@@ -48,21 +53,25 @@ class TvShowAdapter : RecyclerView.Adapter<TvShowAdapter.MovieViewHolder>() {
         }
 
         holder.itemView.tv_title?.text = mMoviesList[position].title.toString()
-        holder.itemView.tv_genres?.text = mMoviesList[position].genres.toString()
-        holder.itemView.tv_rating?.text =
-            mContext?.resources?.getString(R.string.rating)?.let {
+        holder.itemView.tv_date?.text =
+            DateFormat.getLongDate(mMoviesList[position].releaseDate.toString())
+        holder.itemView.tv_popularity?.text =
+            mContext?.resources?.getString(R.string.movie_popularity)?.let {
                 String.format(
                     it,
-                    mMoviesList[position].rating.toString()
+                    mMoviesList[position].popularity.toString()
+                )
+            }
+        holder.itemView.tv_rating?.text =
+            mContext?.resources?.getString(R.string.movie_rating)?.let {
+                String.format(
+                    it,
+                    mMoviesList[position].voteAverage.toString()
                 )
             }
 
-        holder.itemView.setOnClickListener {
-            val intent = Intent(mContext, DetailActivity::class.java)
-            intent.putParcelableArrayListExtra(DETAIL_MOVIE, mMoviesList)
-            intent.putExtra(MOVIE_POSITION, position)
-            intent.putExtra(MOVIE_TYPE, false)
-            mContext.startActivity(intent)
+        holder.itemView.movie_item?.setOnClickListener {
+            mClickListener?.onMovieClickListener(mMoviesList[position].id.toString())
         }
     }
 
