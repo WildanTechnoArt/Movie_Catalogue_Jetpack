@@ -48,6 +48,7 @@ class TvShowAdapter : RecyclerView.Adapter<TvShowAdapter.MovieViewHolder>() {
         }
 
         holder.itemView.tv_title?.text = mMoviesList[position].title.toString()
+        holder.itemView.tv_date?.text = mMoviesList[position].date.toString()
         holder.itemView.tv_genres?.text = mMoviesList[position].genres.toString()
         holder.itemView.tv_rating?.text =
             mContext?.resources?.getString(R.string.rating)?.let {

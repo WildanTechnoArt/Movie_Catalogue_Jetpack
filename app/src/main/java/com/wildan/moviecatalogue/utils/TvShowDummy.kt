@@ -67,7 +67,7 @@ object TvShowDummy {
         }
     }
 
-    private val tvShowDescriptiom = object : ArrayList<String>(){
+    private val tvShowDescription = object : ArrayList<String>(){
         init {
             add("Spoiled billionaire playboy Oliver Queen is missing and presumed dead when his yacht is lost at sea. He returns five years later a changed man, determined to clean up the city as a hooded vigilante armed with a bow.")
             add("The Doom Patrol\"'\"s members each suffered horrible accidents that gave them superhuman abilities - but also left them scarred and disfigured. Traumatized and downtrodden, the team found purpose through The Chief, who brought them together to investigate the weirdest phenomena in existence - and to protect Earth from what they find.")
@@ -107,7 +107,7 @@ object TvShowDummy {
             tvShow.date = tvShowDate[i]
             tvShow.rating = tvShowRating[i]
             tvShow.genres = tvShowGenres[i]
-            tvShow.description = tvShowDescriptiom[i]
+            tvShow.description = tvShowDescription[i]
             tvShows?.add(tvShow)
         }
 
