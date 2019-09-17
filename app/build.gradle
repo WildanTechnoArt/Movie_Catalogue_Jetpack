@@ -77,6 +77,9 @@ dependencies {
     implementation 'com.amitshekhar.android:rx2-android-networking:1.0.2'
     implementation 'com.squareup.retrofit2:converter-gson:2.6.1'
 
+    // Justified TextView
+    implementation 'com.codesgood:justifiedtextview:1.1.0'
+
     // gson
     implementation 'com.google.code.gson:gson:2.8.5'
 
