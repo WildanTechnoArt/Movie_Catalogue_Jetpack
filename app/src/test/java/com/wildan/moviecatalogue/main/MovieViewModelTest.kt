@@ -1,5 +1,6 @@
-package com.wildan.moviecatalogue.ui.main.movie
+package com.wildan.moviecatalogue.main
 
+import com.wildan.moviecatalogue.movie.MovieViewModel
 import org.junit.Assert.*
 import org.junit.Test
 import org.junit.Before

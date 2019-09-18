@@ -1,6 +1,7 @@
-package com.wildan.moviecatalogue.ui.main.detail
+package com.wildan.moviecatalogue.main
 
 import com.wildan.moviecatalogue.R
+import com.wildan.moviecatalogue.detail.DetailViewModel
 import com.wildan.moviecatalogue.model.Movie
 import org.junit.Test
 

@@ -1,4 +1,4 @@
-package com.wildan.moviecatalogue.ui.main.detail
+package com.wildan.moviecatalogue.detail
 
 import androidx.lifecycle.ViewModel
 import com.wildan.moviecatalogue.model.Movie

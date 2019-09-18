@@ -1,4 +1,4 @@
-package com.wildan.moviecatalogue.ui.main.movie
+package com.wildan.moviecatalogue.movie
 
 import android.os.Bundle
 import android.view.LayoutInflater

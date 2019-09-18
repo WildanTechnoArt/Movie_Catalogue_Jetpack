@@ -1,5 +1,6 @@
-package com.wildan.moviecatalogue.ui.main.tv
+package com.wildan.moviecatalogue.main
 
+import com.wildan.moviecatalogue.tv.TvShowViewModel
 import org.junit.Test
 
 import org.junit.Assert.*

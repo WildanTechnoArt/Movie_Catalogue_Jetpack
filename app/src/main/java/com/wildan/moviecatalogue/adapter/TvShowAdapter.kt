@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.wildan.moviecatalogue.GlideApp
 import com.wildan.moviecatalogue.R
 import com.wildan.moviecatalogue.model.Movie
-import com.wildan.moviecatalogue.ui.main.detail.DetailActivity
+import com.wildan.moviecatalogue.detail.DetailActivity
 import com.wildan.moviecatalogue.utils.UtilsConstant.DETAIL_MOVIE
 import com.wildan.moviecatalogue.utils.UtilsConstant.MOVIE_POSITION
 import com.wildan.moviecatalogue.utils.UtilsConstant.MOVIE_TYPE

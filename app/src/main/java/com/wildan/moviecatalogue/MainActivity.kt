@@ -6,8 +6,8 @@ import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.wildan.moviecatalogue.ui.main.movie.MovieFragment
-import com.wildan.moviecatalogue.ui.main.tv.TvShowFragment
+import com.wildan.moviecatalogue.movie.MovieFragment
+import com.wildan.moviecatalogue.tv.TvShowFragment
 import com.wildan.moviecatalogue.utils.UtilsConstant.KEY_FRAGMENT
 import kotlinx.android.synthetic.main.activity_main.*
 

@@ -1,4 +1,4 @@
-package com.wildan.moviecatalogue.ui.main.detail
+package com.wildan.moviecatalogue.detail
 
 import android.annotation.SuppressLint
 import android.os.Bundle
