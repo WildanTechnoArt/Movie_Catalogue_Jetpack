@@ -75,7 +75,7 @@ dependencies {
 
     // Fast Android Networking with RxJava
     implementation 'com.amitshekhar.android:rx2-android-networking:1.0.2'
-    implementation 'com.squareup.retrofit2:converter-gson:2.6.1'
+    implementation 'com.squareup.retrofit2:converter-gson:2.6.2'
 
     // Justified TextView
     implementation 'com.codesgood:justifiedtextview:1.1.0'
@@ -91,6 +91,7 @@ dependencies {
     androidTestImplementation "junit:junit:$junitVersion"
     androidTestImplementation "org.mockito:mockito-core:$mockitoVersion"
     androidTestImplementation "org.mockito:mockito-android:$mockitoVersion"
+    testImplementation "org.mockito:mockito-inline:$mockitoVersion"
 
     // Android Testing Support Library's runner and rules
     androidTestImplementation "androidx.test.ext:junit:$androidXTestVersion"

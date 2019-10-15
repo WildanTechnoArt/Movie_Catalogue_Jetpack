@@ -1,6 +1,11 @@
 package com.wildan.moviecatalogue.view
 
-import com.wildan.moviecatalogue.model.movie.MovieResponse
+import androidx.lifecycle.LiveData
+import androidx.paging.PagedList
+import com.wildan.moviecatalogue.data.source.local.entity.FavoriteMovieEntity
+import com.wildan.moviecatalogue.data.source.local.entity.MovieEntity
+import com.wildan.moviecatalogue.data.source.remote.response.movie.MovieResponse
+import com.wildan.moviecatalogue.vo.Resource
 
 class MovieView {
 
@@ -12,7 +17,8 @@ class MovieView {
     }
 
     interface ViewModel {
-        fun setMovie(apiKey: String, page: Int, view: View)
-        fun onDestroy()
+        fun getMovie(view: View): LiveData<Resource<List<MovieEntity>>>?
+        fun setUsername(username: String)
+        fun getMoviesPaged(): LiveData<Resource<PagedList<FavoriteMovieEntity>>>?
     }
 }

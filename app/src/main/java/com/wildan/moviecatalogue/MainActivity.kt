@@ -6,6 +6,7 @@ import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.wildan.moviecatalogue.ui.main.favorite.FavoriteFragment
 import com.wildan.moviecatalogue.ui.main.movie.MovieFragment
 import com.wildan.moviecatalogue.ui.main.tv.TvShowFragment
 import com.wildan.moviecatalogue.utils.UtilsConstant.KEY_FRAGMENT
@@ -41,6 +42,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         when (menu.itemId) {
             R.id.movie_menu -> pageContent = MovieFragment()
             R.id.tvshow_menu -> pageContent = TvShowFragment()
+            R.id.favorite_menu -> pageContent = FavoriteFragment()
         }
         pageContent?.let {
             supportFragmentManager.beginTransaction()

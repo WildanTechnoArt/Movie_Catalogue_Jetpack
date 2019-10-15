@@ -1,6 +1,11 @@
 package com.wildan.moviecatalogue.view
 
-import com.wildan.moviecatalogue.model.tv.TvShowResponse
+import androidx.lifecycle.LiveData
+import androidx.paging.PagedList
+import com.wildan.moviecatalogue.data.source.local.entity.FavoriteTvShowEntity
+import com.wildan.moviecatalogue.data.source.local.entity.TvShowEntity
+import com.wildan.moviecatalogue.data.source.remote.response.tv.TvShowResponse
+import com.wildan.moviecatalogue.vo.Resource
 
 class TvShowView {
 
@@ -12,7 +17,8 @@ class TvShowView {
     }
 
     interface ViewModel {
-        fun setTvShow(apiKey: String, page: Int, view: View)
-        fun onDestroy()
+        fun getTvShow(view: View): LiveData<Resource<List<TvShowEntity>>>?
+        fun setUsername(username: String)
+        fun getTvShowPaged(): LiveData<Resource<PagedList<FavoriteTvShowEntity>>>?
     }
 }

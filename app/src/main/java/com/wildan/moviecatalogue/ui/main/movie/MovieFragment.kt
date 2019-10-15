@@ -1,12 +1,15 @@
 package com.wildan.moviecatalogue.ui.main.movie
 
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -16,15 +19,14 @@ import com.androidnetworking.AndroidNetworking
 import com.wildan.moviecatalogue.R
 import com.wildan.moviecatalogue.adapter.ListMovieAdapter
 import com.wildan.moviecatalogue.adapter.MovieAdapterListener
-import com.wildan.moviecatalogue.model.movie.MovieResponse
-import com.wildan.moviecatalogue.model.movie.MovieResult
+import com.wildan.moviecatalogue.data.source.remote.response.movie.MovieResponse
 import com.wildan.moviecatalogue.network.ConnectivityStatus
 import com.wildan.moviecatalogue.network.NetworkError
-import com.wildan.moviecatalogue.ui.main.detail.DetailMovieActivity
-import com.wildan.moviecatalogue.utils.UtilsConstant.API_KEY
+import com.wildan.moviecatalogue.ui.main.detail.movie.DetailMovieActivity
 import com.wildan.moviecatalogue.utils.UtilsConstant.MOVIE_EXTRA
-import com.wildan.moviecatalogue.utils.UtilsConstant.STATE_SAVED
 import com.wildan.moviecatalogue.view.MovieView
+import com.wildan.moviecatalogue.viewmodel.ViewModelFactory
+import com.wildan.moviecatalogue.vo.Status
 import retrofit2.HttpException
 import java.net.SocketTimeoutException
 import kotlin.properties.Delegates
@@ -32,13 +34,11 @@ import kotlin.properties.Delegates
 class MovieFragment : Fragment(), MovieView.View, MovieAdapterListener {
 
     private lateinit var rvMovie: RecyclerView
-    private lateinit var movieViewModel: MovieViewModel
+    private var movieViewModel: MovieViewModel? = null
     private var adapter by Delegates.notNull<ListMovieAdapter>()
-    private var page: Int = 1
     private var totalPage: Int? = null
     private var isLoading = false
     private lateinit var swipeRefresh: SwipeRefreshLayout
-    private lateinit var mLayoutManager: RecyclerView.LayoutManager
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -54,17 +54,11 @@ class MovieFragment : Fragment(), MovieView.View, MovieAdapterListener {
         rvMovie = view.findViewById(R.id.rv_movie)
         swipeRefresh = view.findViewById(R.id.swipe_refresh)
 
-        prepare()
-        scrollListener()
-
-        if (savedInstanceState == null) {
-            showListMovie()
-        }
+        AndroidNetworking.initialize(context)
 
         swipeRefresh.setOnRefreshListener {
-            showListMovie()
+            loadData()
         }
-
     }
 
     override fun showProgressBar() {
@@ -81,11 +75,7 @@ class MovieFragment : Fragment(), MovieView.View, MovieAdapterListener {
         totalPage = movie.totalPages
     }
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        outState.putString(STATE_SAVED, "saved")
-    }
-
+    @RequiresApi(Build.VERSION_CODES.M)
     override fun handleError(t: Throwable?) {
         if (ConnectivityStatus.isConnected(context)) {
             when (t) {
@@ -110,48 +100,49 @@ class MovieFragment : Fragment(), MovieView.View, MovieAdapterListener {
         startActivity(intent)
     }
 
-    private fun prepare() {
-        AndroidNetworking.initialize(context)
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        if (activity != null) {
+            movieViewModel = obtainViewModel(activity)
+            adapter = ListMovieAdapter(this)
+            movieViewModel?.setUsername("Movie Catalogue")
 
-        movieViewModel = ViewModelProviders.of(this).get(MovieViewModel::class.java)
-        movieViewModel.getMovies().observe(this, getMovie)
+            loadData()
 
-        adapter = ListMovieAdapter(this)
-        adapter.notifyDataSetChanged()
-
-        rvMovie.setHasFixedSize(true)
-        mLayoutManager = LinearLayoutManager(context)
-        rvMovie.layoutManager = mLayoutManager
-
-        rvMovie.adapter = adapter
+            rvMovie.setHasFixedSize(true)
+            rvMovie.layoutManager = LinearLayoutManager(context)
+            rvMovie.adapter = adapter
+        }
     }
 
-    private fun scrollListener() {
-        rvMovie.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                val linearLayoutManager = recyclerView.layoutManager as LinearLayoutManager
-                val countItem = linearLayoutManager.itemCount
-                val lastVisiblePosition =
-                    linearLayoutManager.findLastCompletelyVisibleItemPosition()
-                val isLastPosition = countItem.minus(1) == lastVisiblePosition
-                if (!isLoading && isLastPosition && page != totalPage) {
-                    page = page.plus(1)
-                    showListMovie()
+    private fun loadData() {
+
+        movieViewModel?.getMovie(view = this)?.observe(this, Observer {
+            if (it != null) {
+                when (it.status) {
+                    Status.LOADING -> {
+                        isLoading = true
+                        swipeRefresh.isRefreshing = true
+                    }
+                    Status.SUCCESS -> {
+                        isLoading = false
+                        swipeRefresh.isRefreshing = false
+                        it.data?.let { it1 -> adapter.setData(it1) }
+                    }
+                    Status.ERROR -> {
+                        isLoading = false
+                        swipeRefresh.isRefreshing = false
+                    }
                 }
             }
         })
     }
 
-    private fun showListMovie() {
-        movieViewModel.setMovie(API_KEY, page = page, view = this)
-    }
-
-    private val getMovie = Observer<ArrayList<MovieResult>> { movieItems ->
-        if (movieItems != null) {
-            if (page == 1) {
-                adapter.setData(movieItems)
-            } else {
-                adapter.refreshAdapter(movieItems)
+    companion object {
+        fun obtainViewModel(activity: FragmentActivity?): MovieViewModel? {
+            val factory = activity?.application?.let { ViewModelFactory.getInstance(it) }
+            return activity?.let {
+                ViewModelProviders.of(it, factory).get(MovieViewModel::class.java)
             }
         }
     }

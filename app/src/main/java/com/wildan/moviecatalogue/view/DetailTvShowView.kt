@@ -1,20 +1,24 @@
 package com.wildan.moviecatalogue.view
 
-import com.wildan.moviecatalogue.model.tv.DetailTvShowResponse
+import androidx.lifecycle.LiveData
+import com.wildan.moviecatalogue.data.source.local.entity.DetailTvShowEntity
+import com.wildan.moviecatalogue.data.source.local.entity.FavoriteTvShowEntity
+import com.wildan.moviecatalogue.data.source.local.room.FavoriteDao
+import com.wildan.moviecatalogue.vo.Resource
 
 class DetailTvShowView {
 
     interface View {
-        fun showDetailTvShow(tv: DetailTvShowResponse)
-        fun noInternetConnection(message: String)
         fun showProgressBar()
         fun hideProgressBar()
         fun handleError(t: Throwable?)
-        fun onSuccess()
     }
 
     interface ViewModel {
-        fun setDetailTvShow(apiKey: String, tvId: String, view: View)
+        fun getDetailTvShow(isRefresh: Boolean, tvId: String, view: View): LiveData<Resource<DetailTvShowEntity>>?
+        fun setUsername(username: String)
+        fun insertMovie(tvShow: FavoriteTvShowEntity, tvDao: FavoriteDao)
+        fun deleteMovie(tvId: String, tvDao: FavoriteDao)
         fun onDestroy()
     }
 }

@@ -2,61 +2,31 @@ package com.wildan.moviecatalogue.ui.main.tv
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
-import com.rx2androidnetworking.Rx2AndroidNetworking
-import com.wildan.moviecatalogue.model.tv.TvShowResponse
-import com.wildan.moviecatalogue.model.tv.TvShowResult
-import com.wildan.moviecatalogue.utils.UtilsConstant
+import androidx.paging.PagedList
+import com.wildan.moviecatalogue.data.source.CatalogueRepository
+import com.wildan.moviecatalogue.data.source.local.entity.FavoriteTvShowEntity
+import com.wildan.moviecatalogue.data.source.local.entity.TvShowEntity
 import com.wildan.moviecatalogue.view.TvShowView
-import io.reactivex.Observer
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.disposables.Disposable
-import io.reactivex.schedulers.Schedulers
+import com.wildan.moviecatalogue.vo.Resource
 
-class TvShowViewModel : ViewModel(), TvShowView.ViewModel {
+class TvShowViewModel(private val repository: CatalogueRepository?) : ViewModel(),
+    TvShowView.ViewModel {
 
-    private val listTvShow = MutableLiveData<ArrayList<TvShowResult>>()
-    private val compositeDisposable = CompositeDisposable()
+    private val mLogin = MutableLiveData<String>()
 
-    fun getTvShows(): LiveData<ArrayList<TvShowResult>> {
-        return listTvShow
+    override fun getTvShowPaged(): LiveData<Resource<PagedList<FavoriteTvShowEntity>>>? {
+        return repository?.getTvShowAsPaged()
     }
 
-    override fun setTvShow(apiKey: String, page: Int, view: TvShowView.View) {
-        view.showProgressBar()
+    override fun getTvShow(
+      view: TvShowView.View
+    ): LiveData<Resource<List<TvShowEntity>>>? =
+        Transformations.switchMap<String, Resource<List<TvShowEntity>>>(mLogin)
+        { repository?.getAllTvShow(view) }
 
-        Rx2AndroidNetworking.get(UtilsConstant.BASE_URL + "discover/tv")
-            .addQueryParameter("api_key", apiKey)
-            .addQueryParameter("page", page.toString())
-            .build()
-            .getObjectObservable(TvShowResponse::class.java)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(object : Observer<TvShowResponse> {
-                override fun onComplete() {
-                    view.hideProgressBar()
-                }
-
-                override fun onSubscribe(d: Disposable) {
-                    compositeDisposable.add(d)
-                }
-
-                override fun onNext(t: TvShowResponse) {
-                    t.let { view.getTvShowData(it) }
-                    listTvShow.postValue(t.tvResult)
-                }
-
-                override fun onError(e: Throwable) {
-                    view.hideProgressBar()
-                    view.handleError(e)
-                }
-
-            })
-
-    }
-
-    override fun onDestroy() {
-        compositeDisposable.dispose()
+    override fun setUsername(username: String) {
+        mLogin.value = username
     }
 }

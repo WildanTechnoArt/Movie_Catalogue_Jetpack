@@ -4,10 +4,9 @@
     <string name="tv_show">Tv Show</string>
     <string name="movie_title">Movie Title</string>
     <string name="poster">poster</string>
-    <string name="movie_rating">Movie Rating</string>
-    <string name="movie_duration">Movie Duration</string>
-    <string name="rating">Rating: %1$s/10</string>
-    <string name="movie_popularity">Movie Popularity</string>
+    <string name="movie_rating">Rating: %1$s/10</string>
+    <string name="movie_duration">%1$s Minutes</string>
+    <string name="movie_popularity">Popularity: %1$s</string>
     <string name="movie_date">Release</string>
     <string name="movie_description">Movie Description</string>
     <string name="overview">OVERVIEW</string>
@@ -16,4 +15,8 @@
     <string name="no_data">No data added yet</string>
     <string name="timeout">Request Timeout</string>
     <string name="no_internet">No Internet Connection</string>
+    <string name="duration">Duration</string>
+    <string name="add_favorite">Tambahkan ke Favorite</string>
+    <string name="favorite_menu">Favorite</string>
+    <string name="remove_favorite">Hapus Dari Favorite</string>
 </resources>

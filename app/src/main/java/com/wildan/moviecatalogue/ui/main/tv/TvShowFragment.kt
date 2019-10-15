@@ -1,12 +1,15 @@
 package com.wildan.moviecatalogue.ui.main.tv
 
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -16,15 +19,14 @@ import com.androidnetworking.AndroidNetworking
 import com.wildan.moviecatalogue.R
 import com.wildan.moviecatalogue.adapter.ListTvAdapter
 import com.wildan.moviecatalogue.adapter.TvShowAdapterListener
-import com.wildan.moviecatalogue.model.tv.TvShowResponse
-import com.wildan.moviecatalogue.model.tv.TvShowResult
+import com.wildan.moviecatalogue.data.source.remote.response.tv.TvShowResponse
 import com.wildan.moviecatalogue.network.ConnectivityStatus
 import com.wildan.moviecatalogue.network.NetworkError
-import com.wildan.moviecatalogue.ui.main.detail.DetailMovieActivity
-import com.wildan.moviecatalogue.utils.UtilsConstant.API_KEY
+import com.wildan.moviecatalogue.ui.main.detail.tv.DetailTvShowActivity
 import com.wildan.moviecatalogue.utils.UtilsConstant.MOVIE_EXTRA
-import com.wildan.moviecatalogue.utils.UtilsConstant.STATE_SAVED
 import com.wildan.moviecatalogue.view.TvShowView
+import com.wildan.moviecatalogue.viewmodel.ViewModelFactory
+import com.wildan.moviecatalogue.vo.Status
 import retrofit2.HttpException
 import java.net.SocketTimeoutException
 import kotlin.properties.Delegates
@@ -32,12 +34,10 @@ import kotlin.properties.Delegates
 class TvShowFragment : Fragment(), TvShowView.View, TvShowAdapterListener {
 
     private lateinit var rvTvShow: RecyclerView
-
-    private lateinit var tvViewModel: TvShowViewModel
+    private var tvViewModel: TvShowViewModel? = null
     private var adapter by Delegates.notNull<ListTvAdapter>()
-    private var page: Int = 1
     private var totalPage: Int? = null
-    private var isLoading by Delegates.notNull<Boolean>()
+    private var isLoading = false
     private lateinit var swipeRefresh: SwipeRefreshLayout
 
     override fun onCreateView(
@@ -54,15 +54,10 @@ class TvShowFragment : Fragment(), TvShowView.View, TvShowAdapterListener {
         rvTvShow = view.findViewById(R.id.rv_movie)
         swipeRefresh = view.findViewById(R.id.swipe_refresh)
 
-        prepare()
-        scrollListener()
-
-        if (savedInstanceState == null) {
-            showListTvShow()
-        }
+        AndroidNetworking.initialize(context)
 
         swipeRefresh.setOnRefreshListener {
-            showListTvShow()
+            loadData()
         }
 
     }
@@ -81,11 +76,7 @@ class TvShowFragment : Fragment(), TvShowView.View, TvShowAdapterListener {
         swipeRefresh.isRefreshing = false
     }
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        outState.putString(STATE_SAVED, "saved")
-    }
-
+    @RequiresApi(Build.VERSION_CODES.M)
     override fun handleError(t: Throwable?) {
         if (ConnectivityStatus.isConnected(context)) {
             when (t) {
@@ -105,52 +96,53 @@ class TvShowFragment : Fragment(), TvShowView.View, TvShowAdapterListener {
     }
 
     override fun onTvClickListener(tvId: String) {
-        val intent = Intent(context, DetailMovieActivity::class.java)
+        val intent = Intent(context, DetailTvShowActivity::class.java)
         intent.putExtra(MOVIE_EXTRA, tvId)
         startActivity(intent)
     }
 
-    private fun prepare() {
-        AndroidNetworking.initialize(context)
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        if (activity != null) {
+            tvViewModel = obtainViewModel(activity)
+            adapter = ListTvAdapter(this)
+            tvViewModel?.setUsername("Movie Catalogue")
 
-        tvViewModel = ViewModelProviders.of(this).get(TvShowViewModel::class.java)
-        tvViewModel.getTvShows().observe(this, getTvShow)
+            loadData()
 
-        adapter = ListTvAdapter(this)
-        adapter.notifyDataSetChanged()
-
-        rvTvShow.setHasFixedSize(true)
-        rvTvShow.layoutManager = LinearLayoutManager(context)
-
-        rvTvShow.adapter = adapter
+            rvTvShow.setHasFixedSize(true)
+            rvTvShow.layoutManager = LinearLayoutManager(context)
+            rvTvShow.adapter = adapter
+        }
     }
 
-    private fun scrollListener() {
-        rvTvShow.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                val linearLayoutManager = recyclerView.layoutManager as LinearLayoutManager
-                val countItem = linearLayoutManager.itemCount
-                val lastVisiblePosition =
-                    linearLayoutManager.findLastCompletelyVisibleItemPosition()
-                val isLastPosition = countItem.minus(1) == lastVisiblePosition
-                if (!isLoading && isLastPosition && page < totalPage ?: 0) {
-                    page = page.plus(1)
-                    showListTvShow()
+    private fun loadData() {
+        tvViewModel?.getTvShow(view = this)?.observe(this, Observer {
+            if (it != null) {
+                when (it.status) {
+                    Status.LOADING -> {
+                        isLoading = true
+                        swipeRefresh.isRefreshing = true
+                    }
+                    Status.SUCCESS -> {
+                        isLoading = false
+                        swipeRefresh.isRefreshing = false
+                        it.data?.let { it1 -> adapter.setData(it1) }
+                    }
+                    Status.ERROR -> {
+                        isLoading = false
+                        swipeRefresh.isRefreshing = false
+                    }
                 }
             }
         })
     }
 
-    private fun showListTvShow() {
-        tvViewModel.setTvShow(API_KEY, page = page, view = this)
-    }
-
-    private val getTvShow = Observer<ArrayList<TvShowResult>> { movieItems ->
-        if (movieItems != null) {
-            if (page == 1) {
-                adapter.setData(movieItems)
-            } else {
-                adapter.refreshAdapter(movieItems)
+    companion object {
+        fun obtainViewModel(activity: FragmentActivity?): TvShowViewModel? {
+            val factory = activity?.application?.let { ViewModelFactory.getInstance(it) }
+            return activity?.let {
+                ViewModelProviders.of(it, factory).get(TvShowViewModel::class.java)
             }
         }
     }
